@@ -7,16 +7,21 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Login from './Login';
 import { auth } from './firebase';
 import { useStateValue } from "./StateProvider";
+import Payment from './Payment';
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+
+const promise = loadStripe('pk_test_51HQvOXI3Uh53RTia512pe6vhHjpbJWnxwx7vOIoM33a54osDwENqcATMv4O6Gk2CRE4E0yMxYgQwNaDzyNNUwEfH001nnqpN3c');
 
 function App() {
 
-  const [{}, dispath] = useStateValue();
+  const [{ }, dispath] = useStateValue();
 
   useEffect(() => {
     auth.onAuthStateChanged(authUser => {
       console.log("user is ", authUser)
 
-      if(authUser){
+      if (authUser) {
         //logged in
         dispath({
           type: 'SET_USER',
@@ -42,6 +47,12 @@ function App() {
           <Route path="/checkout">
             <Header />
             <Checkout />
+          </Route>
+          <Route path="/payment">
+            <Header />
+            <Elements stripe={promise}>
+              <Payment />
+            </Elements>
           </Route>
           <Route path="/">
             <Header />
