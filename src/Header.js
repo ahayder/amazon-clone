@@ -2,12 +2,27 @@ import React from 'react'
 import './Header.css'
 import SearchIcon from '@material-ui/icons/Search'
 import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket'
+import { Link } from 'react-router-dom'
+import { useStateValue } from './StateProvider'
+import { auth } from './firebase'
 
 function Header() {
+
+  const [{ basket, user }, dispatch] = useStateValue();
+
+  const handleAuthentication = () => {
+    if(user){
+      auth.signOut();
+    }
+  }
+
   return (
     <div className="header">
 
-      <img class="header__logo " src="https://pngimg.com/uploads/amazon/amazon_PNG11.png" />
+      <Link to="/">
+        <img class="header__logo " src="https://pngimg.com/uploads/amazon/amazon_PNG11.png" />
+      </Link>
+
 
       <div className="header__search">
         <input className="header__searchInput" type="text" />
@@ -15,14 +30,16 @@ function Header() {
       </div>
 
       <div className="header__nav">
-        <div className="header__option">
-          <span className="header__optionLineOne">
-            Hello Guest
+        <Link to={!user && '/login'}>
+          <div onClick={handleAuthentication} className="header__option">
+            <span className="header__optionLineOne">
+              Hello Guest
           </span>
-          <span className="header__optionLineTwo">
-            Sign In
+            <span className="header__optionLineTwo">
+              {user ? 'Sign Out' : 'Sign in'}
           </span>
-        </div>
+          </div>
+        </Link>
         <div className="header__option">
           <span className="header__optionLineOne">
             Returns
@@ -39,12 +56,14 @@ function Header() {
             Prime
           </span>
         </div>
-        <div className="header__optionBasket">
-          <ShoppingBasketIcon />
-          <span className="header__optioinLineTwo header__basketCount">
-            0
-          </span>
-        </div>
+        <Link to="/checkout">
+          <div className="header__optionBasket">
+            <ShoppingBasketIcon />
+            <span className="header__optioinLineTwo header__basketCount">
+              {basket?.length}
+            </span>
+          </div>
+        </Link>
       </div>
 
     </div>
